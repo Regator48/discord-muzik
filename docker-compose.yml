@@ -1,0 +1,47 @@
+services:
+  lavalink:
+    image: ghcr.io/lavalink-devs/lavalink:latest
+    container_name: lavalink
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./lavalink/application.yml:/opt/Lavalink/application.yml
+      - ./lavalink/plugins:/opt/Lavalink/plugins
+    environment:
+      - _JAVA_OPTIONS=-Xmx2G
+      - SERVER_PORT=2333
+
+  lx-proxy:
+    build:
+      context: ./lx-proxy
+      dockerfile: Dockerfile
+    container_name: lx-proxy
+    restart: unless-stopped
+    network_mode: host
+    env_file:
+      - ./lx-proxy/.env
+
+  ytdlp-proxy:
+    build:
+      context: ./ytdlp-service
+      dockerfile: Dockerfile
+    container_name: ytdlp-proxy
+    restart: unless-stopped
+    network_mode: host
+
+  music-bot:
+    build:
+      context: ./bot
+      dockerfile: Dockerfile
+    container_name: music-bot
+    restart: unless-stopped
+    network_mode: host
+    env_file:
+      - ./bot/.env
+    environment:
+      - DATABASE_URL=file:./lavamusic.db
+      - YTDLP_PROXY=http://127.0.0.1:4567
+      - LX_PROXY_URL=http://127.0.0.1:4568
+    depends_on:
+      - lavalink
+      - lx-proxy

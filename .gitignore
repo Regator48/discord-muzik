@@ -1,0 +1,22 @@
+# Secrets — never commit real credentials
+.env
+lavalink/application.yml
+lavalink/.env
+
+# Logs
+*.log
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+dist/
+
+# Databases
+*.db
+*.sqlite
+
+# OS junk
+.DS_Store

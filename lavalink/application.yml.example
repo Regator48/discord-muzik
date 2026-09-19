@@ -1,0 +1,36 @@
+server:
+  port: 2333
+  address: 0.0.0.0
+
+lavalink:
+  plugins:
+    - dependency: "dev.lavalink.youtube:youtube-plugin:1.18.2"
+      repository: "https://maven.lavalink.dev/releases"
+
+  server:
+    password: "youshallnotpass"
+    sources:
+      youtube: true
+      bandcamp: true
+      soundcloud: true
+      twitch: true
+      http: true
+      local: false
+      spotify: true
+    bufferDurationMs: 7500
+    YoutubePlaylistLoadLimit: 6
+
+plugins:
+  youtube:
+    enabled: true
+    allowSearch: true
+    oauth:
+      enabled: true
+      # Get your own refresh token: https://github.com/lavalink-devs/youtube-source#oauth
+      refreshToken: "YOUR_YOUTUBE_OAUTH_REFRESH_TOKEN_HERE"
+    clients:
+      - TV
+      - TVHTML5_SIMPLY
+      - WEB
+      - WEBEMBEDDED
+      - ANDROID_VR
