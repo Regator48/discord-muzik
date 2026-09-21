@@ -61,10 +61,11 @@ export default class LoadMoreButton extends Component {
 		let added = 0;
 
 		try {
-			// Load in parallel but capped — flooding the proxy with simultaneous
-			// yt-dlp requests serializes them anyway and causes timeouts.
-			const results = await mapLimit(batch, 4, async (item) => {
+			// Gentle pacing — resolve at most 2 at a time with a small delay
+			// between starts so active playback doesn't stutter.
+			const results = await mapLimit(batch, 2, async (item) => {
 				const query = item.query || item.title + (item.author ? ` ${item.author}` : "");
+				await new Promise((r) => setTimeout(r, 400));
 				return searchAndQueueTrack(player, interaction.user, query);
 			});
 			added = results.filter(Boolean).length;

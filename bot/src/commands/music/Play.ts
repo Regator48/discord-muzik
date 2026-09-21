@@ -220,14 +220,18 @@ export default class Play extends Command {
 			});
 		}
 
-		// Remaining 15: limited-concurrency background load (unbounded parallelism
-		// floods the proxy/YouTube with requests and causes 404s/timeouts)
+		// Remaining 15: gentle background load *after* the first song starts
+		// playing smoothly — waiting before resolving avoids starving the live
+		// stream during its critical first seconds (fixes startup stutter).
 		const remainingItems = tracksToLoad.slice(5);
 		if (remainingItems.length > 0) {
 			const results = await mapLimit(
 				remainingItems,
-				4,
-				async (item) => this.searchAndQueueTrack(player, ctx.author, item.query || item.title)
+				2,
+				async (item) => {
+					await new Promise((r) => setTimeout(r, 400));
+					return this.searchAndQueueTrack(player, ctx.author, item.query || item.title);
+				}
 			);
 			results.forEach((r) => { if (r) added++; });
 		}
@@ -288,14 +292,16 @@ export default class Play extends Command {
 			});
 		}
 
-		// Remaining 15: limited-concurrency background load (unbounded parallelism
-		// floods the proxy/YouTube with requests and causes 404s/timeouts)
+		// Remaining 15: gentle background load *after* the first song starts
+		// playing smoothly — waiting before resolving avoids starving the live
+		// stream during its critical first seconds (fixes startup stutter).
 		const remainingItems = tracksToLoad.slice(5);
 		if (remainingItems.length > 0) {
 			const results = await mapLimit(
 				remainingItems,
-				4,
+				2,
 				async (entry) => {
+					await new Promise((r) => setTimeout(r, 400));
 					const query = entry.title + (entry.author ? ` ${entry.author}` : "");
 					return this.searchAndQueueTrack(player, ctx.author, query);
 				}
